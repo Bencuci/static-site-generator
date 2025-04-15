@@ -36,7 +36,7 @@ def copy_to_dir(source_path, target_path):
 
 
 def generate_page(from_path, template_path, dest_path, base_path):
-  print(f"Generating page from ${from_path} to ${dest_path}, using ${template_path}.")
+  print(f"Generating page from {from_path} to {dest_path}, using {template_path}.")
 
   with open(from_path, 'r') as from_file:
     from_content = from_file.read()
@@ -56,8 +56,8 @@ def generate_page(from_path, template_path, dest_path, base_path):
         page_content = (
           template_content.replace("{{ Title }}", title)
           .replace("{{ Content }}", from_html)
-          .replace('href="/', f'href="${base_path}')
-          .replace('src="/', f'src="${base_path}')
+          .replace('href="/', f'href="{base_path}')
+          .replace('src="/', f'src="{base_path}')
         )
         dest_file.write(page_content)
 
