@@ -59,7 +59,7 @@ def generate_page(from_path, template_path, dest_path, base_path):
           .replace('href="/', f'href="{base_path}')
           .replace('src="/', f'src="{base_path}')
           .replace("src='/", f"src='{base_path}")
-          .replace("href='/", f'href="{base_path}')
+          .replace("href='/", f"href='{base_path}")
         )
         dest_file.write(page_content)
 
