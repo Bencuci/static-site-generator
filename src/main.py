@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 from textnode import TextNode, TextType
 from block_markdown import markdown_to_html_node
@@ -34,7 +35,7 @@ def copy_to_dir(source_path, target_path):
       shutil.copy(path_to_file, path_to_target)
 
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, base_path):
   print(f"Generating page from ${from_path} to ${dest_path}, using ${template_path}.")
 
   with open(from_path, 'r') as from_file:
@@ -52,10 +53,15 @@ def generate_page(from_path, template_path, dest_path):
         os.makedirs(dest_dir, exist_ok=True)
 
       with open(dest_path, 'w') as dest_file:
-        page_content = template_content.replace("{{ Title }}", title).replace("{{ Content }}", from_html)
+        page_content = (
+          template_content.replace("{{ Title }}", title)
+          .replace("{{ Content }}", from_html)
+          .replace('href="/', f'href="${base_path}')
+          .replace('src="/', f'src="${base_path}')
+        )
         dest_file.write(page_content)
 
-def generate_pages(content_dir, template_path, public_dir):
+def generate_pages(content_dir, template_path, public_dir, base_path):
   for root, dirs, files in os.walk(content_dir):
     for file in files:
       if file.endswith('.md'):
@@ -68,11 +74,17 @@ def generate_pages(content_dir, template_path, public_dir):
             dest_rel_path = rel_path.replace(".md", ".html")
         
         dest_path = os.path.join(public_dir, dest_rel_path)
-        generate_page(md_path, template_path, dest_path)
+        generate_page(md_path, template_path, dest_path, base_path)
   
 def main():
-  copy_to_dir("./static", "./public")
-  generate_pages("./content", "./template.html", "./public")
+  base_path = ""
+  if len(sys.argv) > 1:
+    base_path = sys.argv[1]
+  else:
+    base_path = "/"
+
+  copy_to_dir("./static", "./docs")
+  generate_pages("./content", "./template.html", "./docs", base_path)
 
 if __name__ == "__main__":
   main()
